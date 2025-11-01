@@ -1,0 +1,13 @@
+# Ignore datasets and uploads
+data.csv
+data/
+uploads/
+
+# Ignore Python cache and venv
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Ignore VSCode settings
+.vscode/
