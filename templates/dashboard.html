@@ -2,40 +2,167 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dataset Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { background: #f8f9fa; }
-    .card { margin-bottom: 1rem; }
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .stat-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    .section-number {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum';
+    }
+    .divider-line {
+      height: 1px;
+      background: linear-gradient(to right, #0f172a 0%, #0f172a 50%, transparent 100%);
+    }
   </style>
 </head>
-<body>
-<div class="container py-4">
-    <h1 class="mb-3">Dataset Dashboard</h1>
-
-    <div class="card p-3">
-        <h5>Dataset Overview</h5>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item"><strong>File:</strong> {{ filename }}</li>
-            <li class="list-group-item"><strong>Total Rows:</strong> {{ total_rows }}</li>
-            <li class="list-group-item"><strong>Total Columns:</strong> {{ total_cols }}</li>
-            <li class="list-group-item"><strong>Numeric Columns:</strong> {{ numeric_cols }}</li>
-            <li class="list-group-item"><strong>Categorical Columns:</strong> {{ categorical_cols }}</li>
-            <li class="list-group-item"><strong>Missing (overall):</strong> {{ missing_percent }}%</li>
-        </ul>
-    </div>
-
-    <div class="card p-3">
-        <h5>Data Preview </h5>
-        <div class="table-responsive">
-            {{ preview|safe }}
+<body class="bg-white min-h-screen">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 max-w-7xl">
+    <!-- Header -->
+    <div class="mb-16">
+      <div class="flex items-start justify-between mb-8">
+        <div>
+          <div class="mb-4">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Dashboard</span>
+          </div>
+          <h1 class="text-4xl sm:text-5xl font-bold text-slate-950 tracking-[-0.03em] leading-[1.1] mb-3">
+            Dataset Overview
+          </h1>
+          <p class="text-sm text-slate-500 font-medium">Comprehensive dataset metadata and preview</p>
         </div>
+      </div>
+      <div class="divider-line"></div>
     </div>
 
-    <div class="text-center mt-3">
-        <a href="/analysis" class="btn btn-primary">Run Analysis</a>
-        <a href="/" class="btn btn-secondary ms-2">Upload another file</a>
+    <!-- Dataset Overview Cards -->
+    <div class="mb-16">
+      <div class="mb-6">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Statistics</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="stat-card border-2 border-slate-900 bg-white p-6 hover:bg-slate-50">
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.25em]">File Name</span>
+            <div class="w-8 h-px bg-slate-900 mt-2"></div>
+          </div>
+          <div class="text-sm font-mono text-slate-950 leading-relaxed break-all" title="{{ filename }}">{{ filename }}</div>
+        </div>
+        <div class="stat-card border-2 border-slate-900 bg-white p-6 hover:bg-slate-50">
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.25em]">Total Rows</span>
+            <div class="w-8 h-px bg-slate-900 mt-2"></div>
+          </div>
+          <div class="text-4xl font-bold text-slate-950 section-number tracking-tight">{{ total_rows }}</div>
+        </div>
+        <div class="stat-card border-2 border-slate-900 bg-white p-6 hover:bg-slate-50">
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.25em]">Total Columns</span>
+            <div class="w-8 h-px bg-slate-900 mt-2"></div>
+          </div>
+          <div class="text-4xl font-bold text-slate-950 section-number tracking-tight">{{ total_cols }}</div>
+        </div>
+        <div class="stat-card border-2 border-slate-900 bg-white p-6 hover:bg-slate-50">
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.25em]">Numeric Columns</span>
+            <div class="w-8 h-px bg-slate-900 mt-2"></div>
+          </div>
+          <div class="text-4xl font-bold text-slate-950 section-number tracking-tight">{{ numeric_cols }}</div>
+        </div>
+        <div class="stat-card border-2 border-slate-900 bg-white p-6 hover:bg-slate-50">
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.25em]">Categorical Columns</span>
+            <div class="w-8 h-px bg-slate-900 mt-2"></div>
+          </div>
+          <div class="text-4xl font-bold text-slate-950 section-number tracking-tight">{{ categorical_cols }}</div>
+        </div>
+        <div class="stat-card border-2 border-slate-900 bg-white p-6 hover:bg-slate-50">
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.25em]">Missing Values</span>
+            <div class="w-8 h-px bg-slate-900 mt-2"></div>
+          </div>
+          <div class="text-4xl font-bold text-slate-950 section-number tracking-tight">{{ missing_percent }}%</div>
+        </div>
+      </div>
     </div>
-</div>
+
+    <!-- Data Preview Card -->
+    <div class="mb-16">
+      <div class="mb-6">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Preview</span>
+      </div>
+      <div class="border-2 border-slate-900 bg-white">
+        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+          <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Data Preview</span>
+        </div>
+        <div class="p-6">
+          <div class="overflow-x-auto border border-slate-900">
+            <div class="min-w-full">
+              {{ preview|safe }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-end">
+      <a href="/" class="inline-block px-8 py-3.5 bg-white text-slate-950 text-sm font-bold uppercase tracking-[0.15em] border-2 border-slate-900 hover:bg-slate-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 text-center">
+        Upload Another File
+      </a>
+      <a href="/analysis" class="inline-block px-8 py-3.5 bg-slate-950 text-white text-sm font-bold uppercase tracking-[0.15em] hover:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 text-center">
+        Run Analysis
+      </a>
+    </div>
+  </div>
+
+  <!-- Custom styles for table from preview -->
+  <style>
+    .overflow-x-auto table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+    }
+    .overflow-x-auto table th {
+      background-color: #f8fafc;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 2px solid #0f172a;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      white-space: nowrap;
+    }
+    .overflow-x-auto table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+      font-size: 0.8125rem;
+    }
+    .overflow-x-auto table tr:hover {
+      background-color: #f8fafc;
+    }
+    .overflow-x-auto table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
 </body>
 </html>

@@ -1,125 +1,280 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analysis</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #f8f9fa; }
-        .card { margin-bottom: 1rem; }
-        .insight-list li { margin-bottom: .6rem; }
-        .lead-label { font-weight: 600; display: inline-block; width: 190px; }
-        .insight-row { margin-bottom: 0.4rem; }
-        img.rounded { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: -0.015em;
+        }
+        .insight-item {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .insight-item:hover {
+            transform: translateX(4px);
+        }
+        .divider-line {
+            height: 1px;
+            background: linear-gradient(to right, #0f172a 0%, #0f172a 50%, transparent 100%);
+        }
+        .section-number {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: 'tnum';
+        }
+        .insight-index {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: 'tnum';
+        }
     </style>
 </head>
-<body>
-<div class="container py-4">
-    <h1 class="mb-3">Automated Data Analysis - {{ filename }}</h1>
-    <a href="/dashboard" class="btn btn-secondary mb-3">Back to Dashboard</a>
-
-    <div class="row">
-        <div class="col-lg-7">
-            <div class="card p-3 mb-3">
-    <h5 class="mb-2">Executive Insights</h5>
-    {% if insights %}
-        <ul class="list-group list-group-flush">
-            {% for item in insights %}
-                <li class="list-group-item">
-                    <strong>Insight {{ loop.index }}:</strong>
-                    <span>{{ item }}</span>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No insights available.</p>
-    {% endif %}
-</div>
-
-
-            <div class="card p-3">
-                <h5 class="mb-3">Actionable Recommendations</h5>
-                <ul>
-                    {% if recommendations %}
-                        {% for r in recommendations %}
-                            <li>{{ r }}</li>
-                        {% endfor %}
-                    {% else %}
-                        <li>No immediate recommendations. Data appears healthy.</li>
-                    {% endif %}
-                </ul>
-            </div>
-
-            <div class="card p-3">
-                <h5 class="mb-2">Statistical Summary</h5>
-                <div class="table-responsive">
-                    {{ stats|safe }}
+<body class="bg-white min-h-screen">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 max-w-7xl">
+        <!-- Header -->
+        <div class="mb-16">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-8">
+                <div class="mb-6 sm:mb-0">
+                    <div class="mb-4">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Analysis Report</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl font-bold text-slate-950 tracking-[-0.03em] leading-[1.1] mb-3">
+                        Automated Analysis
+                    </h1>
+                    <div class="mt-3">
+                        <span class="text-xs font-mono text-slate-500">{{ filename }}</span>
+                    </div>
                 </div>
+                <a href="/dashboard" class="inline-block px-6 py-3 bg-white text-slate-950 text-xs font-bold uppercase tracking-[0.15em] border-2 border-slate-900 hover:bg-slate-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 w-fit">
+                    ← Back to Dashboard
+                </a>
             </div>
-
-            <div class="card p-3">
-                <h5 class="mb-2">Missing Values (per column)</h5>
-                <div class="table-responsive">
-                    {{ null_counts|safe }}
-                </div>
-            </div>
-
-            <div class="card p-3">
-                <h5 class="mb-2">Unique Value Counts</h5>
-                <div class="table-responsive">
-                    {{ unique_counts|safe }}
-                </div>
-            </div>
+            <div class="divider-line"></div>
         </div>
 
-        <div class="col-lg-5">
-            <div class="card p-3 mb-3">
-                <h6 class="mb-2">Visualizations</h6>
-
-                {% if plots['heatmap'] %}
-                    <div class="mb-3">
-                        <h6 class="small">Correlation Heatmap</h6>
-                        <img src="{{ url_for('static', filename=plots['heatmap']) }}" class="img-fluid rounded" alt="heatmap">
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Analysis Content -->
+            <div class="lg:col-span-2 space-y-12">
+                <!-- Executive Insights Card -->
+                <div>
+                    <div class="mb-6">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Insights</span>
                     </div>
-                {% endif %}
-
-                {% if plots['trends'] %}
-                    <div class="mb-3">
-                        <h6 class="small">Trends</h6>
-                        <img src="{{ url_for('static', filename=plots['trends']) }}" class="img-fluid rounded" alt="trends">
+                    <div class="border-2 border-slate-900 bg-white">
+                        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Executive Insights</span>
+                        </div>
+                        <div class="p-6">
+                            {% if insights %}
+                                <ul class="space-y-4">
+                                    {% for item in insights %}
+                                        <li class="insight-item flex items-start p-5 bg-white border-l-4 border-slate-900 hover:bg-slate-50">
+                                            <span class="flex-shrink-0 w-8 h-8 border-2 border-slate-900 text-slate-950 flex items-center justify-center font-bold text-xs mr-5 mt-0.5 insight-index">
+                                                {{ loop.index }}
+                                            </span>
+                                            <span class="text-slate-700 flex-1 leading-relaxed text-sm">{{ item }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-slate-500 text-center py-12 text-sm">No insights available.</p>
+                            {% endif %}
+                        </div>
                     </div>
-                {% endif %}
+                </div>
 
-                {% if plots['outliers_box'] %}
-                    <div class="mb-3">
-                        <h6 class="small">Outlier Boxplots</h6>
-                        <img src="{{ url_for('static', filename=plots['outliers_box']) }}" class="img-fluid rounded" alt="outliers">
+                <!-- Actionable Recommendations Card -->
+                <div>
+                    <div class="mb-6">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Actions</span>
                     </div>
-                {% endif %}
+                    <div class="border-2 border-slate-900 bg-white">
+                        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Actionable Recommendations</span>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3">
+                                {% if recommendations %}
+                                    {% for r in recommendations %}
+                                        <li class="insight-item flex items-start p-4 bg-amber-50 border-l-4 border-amber-900 hover:bg-amber-100">
+                                            <div class="w-1 h-1 bg-amber-900 mr-4 mt-2 flex-shrink-0"></div>
+                                            <span class="text-slate-700 flex-1 text-sm leading-relaxed">{{ r }}</span>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="flex items-start p-4 bg-emerald-50 border-l-4 border-emerald-900">
+                                        <div class="w-1 h-1 bg-emerald-900 mr-4 mt-2 flex-shrink-0"></div>
+                                        <span class="text-slate-700 text-sm">No immediate recommendations. Data appears healthy.</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-                {% if plots['feature_importance'] %}
-                    <div class="mb-3">
-                        <h6 class="small">Feature Importance</h6>
-                        <img src="{{ url_for('static', filename=plots['feature_importance']) }}" class="img-fluid rounded" alt="importance">
+                <!-- Statistical Summary Card -->
+                <div>
+                    <div class="mb-6">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Statistics</span>
                     </div>
-                {% endif %}
+                    <div class="border-2 border-slate-900 bg-white">
+                        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Statistical Summary</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="overflow-x-auto border border-slate-900">
+                                {{ stats|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                {% if plots['quality_score'] %}
-                    <div class="mb-3">
-                        <h6 class="small">Data Quality Score</h6>
-                        <img src="{{ url_for('static', filename=plots['quality_score']) }}" class="img-fluid rounded" alt="quality">
+                <!-- Missing Values Card -->
+                <div>
+                    <div class="mb-6">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Data Quality</span>
                     </div>
-                {% endif %}
+                    <div class="border-2 border-slate-900 bg-white">
+                        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Missing Values (per column)</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="overflow-x-auto border border-slate-900">
+                                {{ null_counts|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                {% if plots['skewness'] %}
-                    <div class="mb-3">
-                        <h6 class="small">Skewness</h6>
-                        <img src="{{ url_for('static', filename=plots['skewness']) }}" class="img-fluid rounded" alt="skewness">
+                <!-- Unique Value Counts Card -->
+                <div>
+                    <div class="mb-6">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Unique Values</span>
                     </div>
-                {% endif %}
+                    <div class="border-2 border-slate-900 bg-white">
+                        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Unique Value Counts</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="overflow-x-auto border border-slate-900">
+                                {{ unique_counts|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Visualizations -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-6">
+                    <div class="mb-6">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Visualizations</span>
+                    </div>
+                    <div class="border-2 border-slate-900 bg-white">
+                        <div class="border-b-2 border-slate-900 bg-slate-950 px-6 py-4">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Charts & Graphs</span>
+                        </div>
+                        <div class="p-6 space-y-8">
+                            {% if plots['heatmap'] %}
+                                <div>
+                                    <div class="mb-3">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Correlation Heatmap</span>
+                                    </div>
+                                    <img src="{{ url_for('static', filename=plots['heatmap']) }}" class="w-full h-auto border border-slate-900" alt="heatmap">
+                                </div>
+                            {% endif %}
+
+                            {% if plots['trends'] %}
+                                <div>
+                                    <div class="mb-3">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Trends</span>
+                                    </div>
+                                    <img src="{{ url_for('static', filename=plots['trends']) }}" class="w-full h-auto border border-slate-900" alt="trends">
+                                </div>
+                            {% endif %}
+
+                            {% if plots['outliers_box'] %}
+                                <div>
+                                    <div class="mb-3">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Outlier Boxplots</span>
+                                    </div>
+                                    <img src="{{ url_for('static', filename=plots['outliers_box']) }}" class="w-full h-auto border border-slate-900" alt="outliers">
+                                </div>
+                            {% endif %}
+
+                            {% if plots['feature_importance'] %}
+                                <div>
+                                    <div class="mb-3">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Feature Importance</span>
+                                    </div>
+                                    <img src="{{ url_for('static', filename=plots['feature_importance']) }}" class="w-full h-auto border border-slate-900" alt="importance">
+                                </div>
+                            {% endif %}
+
+                            {% if plots['quality_score'] %}
+                                <div>
+                                    <div class="mb-3">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Data Quality Score</span>
+                                    </div>
+                                    <img src="{{ url_for('static', filename=plots['quality_score']) }}" class="w-full h-auto border border-slate-900" alt="quality">
+                                </div>
+                            {% endif %}
+
+                            {% if plots['skewness'] %}
+                                <div>
+                                    <div class="mb-3">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Skewness</span>
+                                    </div>
+                                    <img src="{{ url_for('static', filename=plots['skewness']) }}" class="w-full h-auto border border-slate-900" alt="skewness">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Custom styles for tables -->
+    <style>
+        .overflow-x-auto table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        .overflow-x-auto table th {
+            background-color: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 2px solid #0f172a;
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            white-space: nowrap;
+        }
+        .overflow-x-auto table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+            font-size: 0.8125rem;
+        }
+        .overflow-x-auto table tr:hover {
+            background-color: #f8fafc;
+        }
+        .overflow-x-auto table tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
 </body>
 </html>
