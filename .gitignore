@@ -11,3 +11,6 @@ venv/
 
 # Ignore VSCode settings
 .vscode/
+
+# Ignore test or temp scripts
+pyt.py
